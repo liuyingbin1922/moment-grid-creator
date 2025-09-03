@@ -3,6 +3,8 @@ import { Button } from '@/components/ui/button';
 import { Card } from '@/components/ui/card';
 import { Upload, Download, RotateCcw, ImageIcon, X } from 'lucide-react';
 import { useToast } from '@/hooks/use-toast';
+import { useLanguage } from '@/hooks/useLanguage';
+import LanguageToggle from '@/components/LanguageToggle';
 
 interface PhotoGridProps {}
 
@@ -20,6 +22,7 @@ const PhotoGrid: React.FC<PhotoGridProps> = () => {
   const [dragOverSlot, setDragOverSlot] = useState<number | null>(null);
   const fileInputRef = useRef<HTMLInputElement>(null);
   const { toast } = useToast();
+  const { t } = useLanguage();
 
   const handleFileSelect = useCallback((files: FileList, slotId?: number) => {
     const fileArray = Array.from(files);
@@ -31,8 +34,8 @@ const PhotoGrid: React.FC<PhotoGridProps> = () => {
     
     if (imageFiles.length === 0) {
       toast({
-        title: "文件格式错误",
-        description: "请上传图片文件（JPG, PNG, GIF等）",
+        title: t("fileFormatError"),
+        description: t("fileFormatErrorDesc"),
         variant: "destructive"
       });
       return;
@@ -43,8 +46,8 @@ const PhotoGrid: React.FC<PhotoGridProps> = () => {
     
     if (startIndex === -1) {
       toast({
-        title: "网格已满",
-        description: "请先删除一些图片或重置网格",
+        title: t("gridFull"),
+        description: t("gridFullDesc"),
         variant: "destructive"
       });
       return;
@@ -63,8 +66,8 @@ const PhotoGrid: React.FC<PhotoGridProps> = () => {
     setImages(newImages);
     
     toast({
-      title: "图片上传成功",
-      description: `已添加 ${Math.min(imageFiles.length, 9 - startIndex)} 张图片`
+      title: t("uploadSuccess"),
+      description: `${t("uploadSuccessDesc")} ${Math.min(imageFiles.length, 9 - startIndex)} ${t("uploadSuccessDesc2")}`
     });
   }, [images, toast]);
 
@@ -108,8 +111,8 @@ const PhotoGrid: React.FC<PhotoGridProps> = () => {
     });
     setImages(Array.from({ length: 9 }, (_, i) => ({ id: i, file: null, preview: null })));
     toast({
-      title: "网格已重置",
-      description: "所有图片已清除"
+      title: t("gridReset"),
+      description: t("gridResetDesc")
     });
   }, [images, toast]);
 
@@ -118,8 +121,8 @@ const PhotoGrid: React.FC<PhotoGridProps> = () => {
     
     if (filledImages.length === 0) {
       toast({
-        title: "没有图片",
-        description: "请先上传一些图片",
+        title: t("noImages"),
+        description: t("noImagesDesc"),
         variant: "destructive"
       });
       return;
@@ -196,8 +199,8 @@ const PhotoGrid: React.FC<PhotoGridProps> = () => {
         URL.revokeObjectURL(url);
         
         toast({
-          title: "下载成功",
-          description: "九宫格图片已保存到您的设备"
+          title: t("downloadSuccess"),
+          description: t("downloadSuccessDesc")
         });
       }
     }, 'image/png');
@@ -205,14 +208,15 @@ const PhotoGrid: React.FC<PhotoGridProps> = () => {
 
   return (
     <main className="min-h-screen p-4 md:p-6 lg:p-8">
+      <LanguageToggle />
       <div className="max-w-4xl mx-auto">
         {/* Header */}
         <header className="text-center mb-8 animate-fade-in">
           <h1 className="text-4xl md:text-5xl font-bold mb-4 bg-gradient-primary bg-clip-text text-transparent">
-            九宫格照片工具
+            {t("title")}
           </h1>
           <p className="text-lg md:text-xl text-muted-foreground mb-6">
-            制作时尚的社交媒体图片拼接，适用于朋友圈、Instagram等平台
+            {t("subtitle")}
           </p>
           
           {/* Action Buttons */}
@@ -223,7 +227,7 @@ const PhotoGrid: React.FC<PhotoGridProps> = () => {
               className="gradient-primary text-white shadow-glow hover:shadow-strong transition-all duration-300"
             >
               <Upload className="w-5 h-5 mr-2" />
-              上传图片
+              {t("uploadImages")}
             </Button>
             
             <Button
@@ -233,7 +237,7 @@ const PhotoGrid: React.FC<PhotoGridProps> = () => {
               className="glass border-primary/20 hover:border-primary/40"
             >
               <Download className="w-5 h-5 mr-2" />
-              下载九宫格
+              {t("downloadGrid")}
             </Button>
             
             <Button
@@ -243,7 +247,7 @@ const PhotoGrid: React.FC<PhotoGridProps> = () => {
               className="glass border-destructive/20 hover:border-destructive/40"
             >
               <RotateCcw className="w-5 h-5 mr-2" />
-              重置网格
+              {t("resetGrid")}
             </Button>
           </div>
         </header>
@@ -261,12 +265,12 @@ const PhotoGrid: React.FC<PhotoGridProps> = () => {
             <div className="w-16 h-16 mx-auto mb-4 rounded-full bg-primary/10 flex items-center justify-center animate-float">
               <ImageIcon className="w-8 h-8 text-primary" />
             </div>
-            <h3 className="text-xl font-semibold mb-2">拖拽图片到这里</h3>
+            <h3 className="text-xl font-semibold mb-2">{t("dragHere")}</h3>
             <p className="text-muted-foreground mb-4">
-              或点击上方"上传图片"按钮选择文件
+              {t("orClick")}
             </p>
             <p className="text-sm text-muted-foreground">
-              支持 JPG、PNG、GIF 格式，最多上传 9 张图片
+              {t("supportedFormats")}
             </p>
           </div>
         </div>
@@ -288,7 +292,7 @@ const PhotoGrid: React.FC<PhotoGridProps> = () => {
                   <>
                     <img
                       src={slot.preview}
-                      alt={`网格位置 ${slot.id + 1}`}
+                      alt={`${t("position")} ${slot.id + 1}`}
                       className="w-full h-full object-cover"
                     />
                     <Button
@@ -305,7 +309,7 @@ const PhotoGrid: React.FC<PhotoGridProps> = () => {
                     <div className="text-center">
                       <ImageIcon className="w-8 h-8 mx-auto mb-2 text-muted-foreground" />
                       <span className="text-xs text-muted-foreground">
-                        位置 {slot.id + 1}
+                        {t("position")} {slot.id + 1}
                       </span>
                     </div>
                   </div>
